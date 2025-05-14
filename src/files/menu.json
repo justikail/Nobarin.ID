@@ -1,0 +1,29 @@
+[
+  {
+    "movie": [
+      { "label": "Popular", "url": "/movie/popular" },
+      { "label": "Top Rated", "url": "/movie/top-rated" },
+      { "label": "Now Playing", "url": "/movie/now-playing" },
+      { "label": "Upcoming", "url": "/movie/upcoming" },
+      { "label": "Trending", "url": "/movie/trending" }
+    ]
+  },
+  {
+    "tv": [
+      { "label": "Popular", "url": "/tv/popular" },
+      { "label": "Top Rated", "url": "/tv/top-rated" },
+      { "label": "On The Air", "url": "/tv/on-the-air" },
+      { "label": "Airing Today", "url": "/tv/airing-today" },
+      { "label": "Trending", "url": "/tv/trending" }
+    ]
+  },
+  {
+    "anime": [
+      { "label": "Popular", "url": "/anime/popular" },
+      { "label": "Top Rated", "url": "/anime/top-rated" },
+      { "label": "Upcoming", "url": "/anime/upcoming" },
+      { "label": "Airing", "url": "/anime/airing" },
+      { "label": "Complete", "url": "/anime/complete" }
+    ]
+  }
+]
