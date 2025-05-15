@@ -1,9 +1,8 @@
-import Header from "@/components/header";
+import Header from "@/components/home/header";
 import Hero from "@/components/home/hero";
-import Carousel from "@/components/home/carousel";
 import Faq from "@/components/home/faq";
-import Footer from "@/components/footer";
-import AnimeCarousel from "@/components/home/anime-carousel";
+import Footer from "@/components/home/footer";
+import HomeContent from "@/components/home/home-content";
 
 export default function Home() {
   return (
@@ -11,9 +10,7 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
-        <Carousel type="movie" title="Popular Movies" url="popular" />
-        <Carousel type="tv" title="Popular TV" url="popular" />
-        <AnimeCarousel type="anime" title="Popular Anime" url="popular" />
+        <HomeContent />
         <Faq />
       </main>
       <Footer />

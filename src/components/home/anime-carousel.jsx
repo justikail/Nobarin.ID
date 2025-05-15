@@ -5,6 +5,9 @@ import Image from "next/image";
 import Pagination from "@/components/home/pagination";
 import Link from "next/link";
 import { formattedTitle } from "@/utils/formatter";
+import { Button } from "@/components/ui/button";
+import { ChevronRight } from "lucide-react";
+import { HomeCardSkeleton } from "@/components/ui/skeleton";
 
 export default function AnimeCarousel({ type, title, url }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -41,26 +44,16 @@ export default function AnimeCarousel({ type, title, url }) {
   };
 
   return (
-    <section className="py-12 px-4 md:px-12 bg-black">
-      <Link href={`/${type}/${url}`}>
-        <h2 className="text-2xl font-bold mb-6 transition-all inline-flex items-center group">
-          {title}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="ml-2 h-5 w-5 opacity-100 md:opacity-0 transition-opacity md:group-hover:opacity-100"
-          >
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </h2>
-      </Link>
+    <section>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold">{title}</h2>
+        <Button variant="link" size="sm" asChild className="text-sm text-gray-400 hover:text-white p-0">
+          <Link href={`/${type}/${url}`} className="flex items-center">
+            View All
+            <ChevronRight size={16} className="ml-1" />
+          </Link>
+        </Button>
+      </div>
 
       <div className="relative">
         {error ? (
@@ -70,20 +63,7 @@ export default function AnimeCarousel({ type, title, url }) {
             {scrollPosition > 0 && !isLoading && <Pagination direction="left" handleScroll={handleScroll} />}
 
             <div ref={carouselRef} className="flex gap-4 overflow-x-auto scrollbar-hide pb-4" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-              {isLoading &&
-                Array.from({ length: 7 }).map((_, index) => (
-                  <div key={`skeleton-${index}`} className="relative flex-shrink-0 animate-pulse">
-                    <div className="relative h-[200px] w-[140px] md:h-[250px] md:w-[180px] overflow-hidden rounded bg-zinc-800">
-                      <div className="absolute bottom-0 left-0 w-full">
-                        <div className="absolute top-[-80px] left-2">
-                          <div className="h-16 w-10 rounded-md bg-zinc-700"></div>
-                        </div>
-                      </div>
-                      <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-zinc-700/20 to-transparent"></div>
-                    </div>
-                    <div className="mt-2 h-4 w-3/4 rounded bg-zinc-800"></div>
-                  </div>
-                ))}
+              {isLoading && Array.from({ length: 7 }).map((_, index) => <HomeCardSkeleton key={index} />)}
 
               {!isLoading &&
                 data.length > 0 &&

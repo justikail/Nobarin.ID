@@ -6,7 +6,7 @@ import { ChevronLeft, Search, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/ui/loader";
-import MovieList from "@/components/media/movie-list";
+import MediaList from "@/components/media/media-list";
 import CategoryText from "@/files/category.json";
 import { formattedDate } from "@/utils/formatter";
 
@@ -20,7 +20,6 @@ export default function MediaPage({ mediaType, categoryType, searchParams }) {
   const [error, setError] = useState(false);
   const [genres, setGenres] = useState([]);
   const [rangeDate, setRangeDate] = useState(null);
-
   const router = useRouter();
   const pathname = usePathname();
   const queryPage = parseInt(searchParams?.page || "1", 10);
@@ -28,7 +27,7 @@ export default function MediaPage({ mediaType, categoryType, searchParams }) {
 
   const fetchGenres = async () => {
     try {
-      const response = await fetch("/api/movie/genres");
+      const response = await fetch(`/api/${mediaType}/genres`);
       const data = await response.json();
       setGenres(data.results);
     } catch (error) {
@@ -36,15 +35,15 @@ export default function MediaPage({ mediaType, categoryType, searchParams }) {
     }
   };
 
-  const fetchMovies = async (currentPage = 1) => {
+  const fetchData = async (currentPage = 1) => {
     try {
       setIsLoading(true);
       setError(false);
       const response = await fetch(`/api/${mediaType}/${categoryType}?page=${currentPage}`);
       if (!response.ok) setError(true);
       const data = await response.json();
-      setTotalPages(data.total_pages);
       if (data.dates) setRangeDate(data.dates);
+      setTotalPages(data.total_pages);
       setData(data.results);
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -59,7 +58,7 @@ export default function MediaPage({ mediaType, categoryType, searchParams }) {
   }, []);
 
   useEffect(() => {
-    fetchMovies(queryPage);
+    fetchData(queryPage);
     setPage(queryPage);
   }, [queryPage]);
 
@@ -72,9 +71,9 @@ export default function MediaPage({ mediaType, categoryType, searchParams }) {
 
   const filteredShows =
     data &&
-    data.filter((movie) => {
-      const matchesSearch = movie.title.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesGenre = selectedGenre ? movie.genre_ids.includes(selectedGenre) : true;
+    data.filter((item) => {
+      const matchesSearch = (item.title || item.name).toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesGenre = selectedGenre ? item.genre_ids.includes(selectedGenre) : true;
       return matchesSearch && matchesGenre;
     });
 
@@ -89,7 +88,9 @@ export default function MediaPage({ mediaType, categoryType, searchParams }) {
                   <ChevronLeft size={24} />
                 </Button>
               </Link>
-              <h1 className="text-2xl font-bold">Film {CategoryText[categoryType]} </h1>
+              <h1 className="text-xl font-bold">
+                {mediaType === "movie" ? "Film" : "TV"} {CategoryText[categoryType]}{" "}
+              </h1>
             </div>
             <Button variant="ghost" size="icon" className="rounded-full cursor-pointer" onClick={() => setShowFilters(!showFilters)}>
               <SlidersHorizontal size={20} />
@@ -112,7 +113,7 @@ export default function MediaPage({ mediaType, categoryType, searchParams }) {
               <div className="mt-4 rounded-lg bg-zinc-900 p-4">
                 {rangeDate && (
                   <h3 className="mb-2 text-sm font-medium text-gray-300">
-                    Rentang Waktu : {formattedDate(rangeDate.minimum)} - ${formattedDate(rangeDate.maximum)}
+                    Rentang Waktu : {formattedDate(rangeDate.minimum)} - {formattedDate(rangeDate.maximum)}
                   </h3>
                 )}
                 <h3 className="mb-2 text-sm font-medium text-gray-300">Filter by Genre : </h3>
@@ -147,19 +148,19 @@ export default function MediaPage({ mediaType, categoryType, searchParams }) {
         ) : filteredShows.length === 0 ? (
           <div className="flex h-40 flex-col items-center justify-center rounded-lg bg-zinc-900 p-6 text-center">
             <p className="text-lg font-medium">No results found</p>
-            <p className="mt-1 text-sm text-gray-400">Coba cari film lain untuk menampilkan hasil.</p>
+            <p className="mt-1 text-sm text-gray-400">Tidak ada hasil yang cocok dengan spesifikasi yang anda inginkan.</p>
           </div>
         ) : (
           <>
-            <MovieList data={filteredShows} genres={genres} />
+            <MediaList data={filteredShows} genres={genres} mediaType={mediaType} />
             <div className="mt-10 flex justify-center items-center gap-4">
               <Button className="cursor-pointer hover:bg-violet-600 transition-colors" variant="outline" disabled={page <= 1} onClick={() => updatePage(page - 1)}>
                 Prev
               </Button>
               <span className="text-sm text-gray-300">
-                Page {page} of {Math.min(totalPages, 500)}
+                Page {page} of {(categoryType === "trending" && "1") || Math.min(totalPages, 500)}
               </span>
-              <Button className="cursor-pointer hover:bg-violet-600 transition-colors" variant="outline" disabled={page >= Math.min(totalPages, 500)} onClick={() => updatePage(page + 1)}>
+              <Button className="cursor-pointer hover:bg-violet-600 transition-colors" variant="outline" disabled={page >= Math.min(totalPages, 500) || categoryType === "trending"} onClick={() => updatePage(page + 1)}>
                 Next
               </Button>
             </div>
